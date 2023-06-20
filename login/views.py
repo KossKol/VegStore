@@ -6,7 +6,7 @@ from django.views import View
 from django.http import JsonResponse
 
 
-class Login(View):
+class LoginView(View):
     def get(self, request):
         return render(request, 'logic/index.html')
 
