@@ -8,7 +8,7 @@ from django.http import JsonResponse
 
 class LoginView(View):
     def get(self, request):
-        return render(request, 'logic/index.html')
+        return render(request, 'login/index.html')
 
     def post(self, request):
         form = AuthenticationForm(data=request.POST)
