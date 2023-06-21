@@ -52,6 +52,11 @@ class CartViewSet(viewsets.ModelViewSet):
         cart_item.save()
         return response.Response({'message': 'Product change to cart'}, status=201)
 
+    def destroy(self, request, *args, **kwargs):
+        # В этот раз напишем примерно так как это делает фреймфорк самостоятельно
+        cart_item = self.get_queryset().get(id=kwargs['pk'])
+        cart_item.delete()
+        return response.Response({'message': 'Product delete from cart'}, status=201)
 class CartView(View):
 
     def get(self, request):
