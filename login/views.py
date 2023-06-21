@@ -21,3 +21,9 @@ class LoginView(View):
                 return redirect('store:shop')
         return redirect('login:login')
 
+
+class LogoutView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            logout(request)
+        return redirect('store:shop')
