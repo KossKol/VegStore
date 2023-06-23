@@ -8,12 +8,27 @@ from django.views import View
 from django.http import JsonResponse
 
 
+class MyAuthenticationForm(AuthenticationForm):
+    error_messages = {
+        "invalid_login": (
+            "Пожалуйста введите корректнвъый %(username)s и пароль."
+        ),
+        "inactive": ("Пользователь заблокирован"),
+    }
+
+    def clean(self):
+        # мой новый код
+        super().clean()
+
+
+
+
 class LoginView(View):
     def get(self, request):
         return render(request, 'login/index.html')
 
     def post(self, request):
-        form = AuthenticationForm(data=request.POST)
+        form = MyAuthenticationForm(data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -21,7 +36,8 @@ class LoginView(View):
             if user is not None:
                 login(request, user)
                 return redirect('store:shop')
-        return redirect('login:login')
+        return render(request, "login/index.html",
+                      context={'errors': form.errors['__all__']})
 
 
 class LogoutView(View):
