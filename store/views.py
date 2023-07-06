@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from django.db.models import OuterRef, Subquery, F, ExpressionWrapper, DecimalField, Case, When
 from django.utils import timezone
@@ -39,7 +39,8 @@ class CartViewSet(viewsets.ModelViewSet):
             else:  # Иначе создаём объект по умолчанию (quantity по умолчанию = 1, так прописали в моделях)
                 cart_item = Cart(user=request.user, product=product)
         cart_item.save()  # Сохранили объект в БД
-        return response.Response({'message': 'Product added to cart'}, status=201)  # Вернули ответ, что всё прошло успешно
+        return response.Response({'message': 'Product added to cart'},
+                                 status=201)  # Вернули ответ, что всё прошло успешно
 
     def update(self, request, *args, **kwargs):
         # Для удобства в kwargs передаётся id строки для изменения в БД, под параметром pk
@@ -57,6 +58,8 @@ class CartViewSet(viewsets.ModelViewSet):
         cart_item = self.get_queryset().get(id=kwargs['pk'])
         cart_item.delete()
         return response.Response({'message': 'Product delete from cart'}, status=201)
+
+
 class CartView(View):
 
     def get(self, request):
@@ -108,3 +111,13 @@ class ShopView(View):
                  'discount_value')
 
         return render(request, 'store/shop.html', {"data": products})
+
+
+class WishlistView(View):
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            # код который необходим для обработчика
+            return render(request, "store/wishlist.html")
+        # Иначе отправляет авторизироваться
+        return redirect('login:login')  # from django.shortcuts import redirect
