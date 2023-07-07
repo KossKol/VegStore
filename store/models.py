@@ -65,4 +65,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 class Wishlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ManyToManyField(Product)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Wishlist:{self.user}, {self.product}"
