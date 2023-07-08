@@ -129,8 +129,8 @@ class DelWishlist(View):
         wishlist = Wishlist.objects.filter(id=id).delete()
         return redirect('store:wishlist')
 
+
 class AddWishlist(View):
-    def get(self, request, product_id):
-        product = Product.objects.filter(id=product_id)
-        wishlist = Wishlist.objects.filter(product_id=product).get()
-        return redirect('store:wishlist')
+    def get(self, request, id):
+        wishlist = Wishlist.objects.create(user=request.user, product_id=id)
+        return redirect('store:shop')
