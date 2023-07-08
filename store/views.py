@@ -151,10 +151,16 @@ class WishlistViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         wishlist_items = self.get_queryset().filter(product__id=request.data.get('product'))
         if wishlist_items:
-            return response.Response({'message': 'The product is already in the wishlist'})
+            return response.Response({'message': 'The product is already in wishlist'})
         else:
             product = get_object_or_404(Product, id=request.data.get('product'))
             wishlist_items = Wishlist(user=request.user, product=product)
         wishlist_items.save()
-        return response.Response({'message': 'Product added to cart'},
+        return response.Response({'message': 'Product added to wishlist'},
                                  status=201)
+
+    def destroy(self, request, *args, **kwargs):
+        wishlist_items = self.get_queryset().get(id=kwargs['pk'])
+        wishlist_items.delete()
+        return response.Response({'message': 'Product delete from wishlist'}, status=201)
+
