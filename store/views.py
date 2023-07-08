@@ -5,7 +5,7 @@ from django.utils import timezone
 from .models import Product, Discount, Cart, Wishlist
 from rest_framework import viewsets, response
 from rest_framework.permissions import IsAuthenticated
-from .serializers import CartSerializer
+from .serializers import CartSerializer, WishlistSerializer
 from django.shortcuts import get_object_or_404
 
 
@@ -138,3 +138,23 @@ class AddWishlist(View):
         if not product:
             wishlist = Wishlist.objects.create(user=request.user, product_id=id)
         return redirect('store:shop')
+
+
+class WishlistViewSet(viewsets.ModelViewSet):
+    queryset = Wishlist.objects.all()
+    serializer_class = WishlistSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        wishlist_items = self.get_queryset().filter(product__id=request.data.get('product'))
+        if wishlist_items:
+            return response.Response({'message': 'The product is already in the wishlist'})
+        else:
+            product = get_object_or_404(Product, id=request.data.get('product'))
+            wishlist_items = Wishlist(user=request.user, product=product)
+        wishlist_items.save()
+        return response.Response({'message': 'Product added to cart'},
+                                 status=201)
