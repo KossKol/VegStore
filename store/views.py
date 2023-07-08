@@ -132,5 +132,9 @@ class DelWishlist(View):
 
 class AddWishlist(View):
     def get(self, request, id):
-        wishlist = Wishlist.objects.create(user=request.user, product_id=id)
+        product = Wishlist.objects.filter(user=request.user, product_id=id)
+        if product:
+            pass
+        if not product:
+            wishlist = Wishlist.objects.create(user=request.user, product_id=id)
         return redirect('store:shop')
